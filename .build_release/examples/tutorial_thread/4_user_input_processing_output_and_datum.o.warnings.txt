@@ -1,8 +1,0 @@
-In file included from ./include/openpose/thread/headers.hpp:11:0,
-                 from ./include/openpose/headers.hpp:29,
-                 from examples/tutorial_thread/4_user_input_processing_output_and_datum.cpp:21:
-./include/openpose/thread/subThreadQueueIn.hpp: In instantiation of ‘bool op::SubThreadQueueIn<TDatums, TWorker, TQueue>::work() [with TDatums = std::shared_ptr<std::vector<UserDatum> >; TWorker = std::shared_ptr<op::Worker<std::shared_ptr<std::vector<UserDatum> > > >; TQueue = op::Queue<std::shared_ptr<std::vector<UserDatum> >, std::queue<std::shared_ptr<std::vector<UserDatum> >, std::deque<std::shared_ptr<std::vector<UserDatum> >, std::allocator<std::shared_ptr<std::vector<UserDatum> > > > > >]’:
-examples/tutorial_thread/4_user_input_processing_output_and_datum.cpp:252:1:   required from here
-./include/openpose/thread/subThreadQueueIn.hpp:49:18: warning: unused variable ‘queueNotEmpty’ [-Wunused-variable]
-             bool queueNotEmpty=queueIsRunning;
-                  ^
