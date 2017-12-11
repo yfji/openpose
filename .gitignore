@@ -1,4 +1,5 @@
-build/*
+*.o
+*.d
 doc/*
 examples/images/*
 examples/media/*

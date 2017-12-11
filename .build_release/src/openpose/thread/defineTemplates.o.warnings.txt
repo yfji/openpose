@@ -1,0 +1,7 @@
+In file included from ./include/openpose/thread/headers.hpp:11:0,
+                 from src/openpose/thread/defineTemplates.cpp:1:
+./include/openpose/thread/subThreadQueueIn.hpp: In instantiation of ‘bool op::SubThreadQueueIn<TDatums, TWorker, TQueue>::work() [with TDatums = std::shared_ptr<std::vector<op::Datum> >; TWorker = std::shared_ptr<op::Worker<std::shared_ptr<std::vector<op::Datum> > > >; TQueue = op::Queue<std::shared_ptr<std::vector<op::Datum> > >]’:
+src/openpose/thread/defineTemplates.cpp:11:5:   required from here
+./include/openpose/thread/subThreadQueueIn.hpp:52:18: warning: unused variable ‘queueNotEmpty’ [-Wunused-variable]
+             bool queueNotEmpty=queueIsRunning;
+                  ^
