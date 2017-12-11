@@ -39,6 +39,7 @@ Server::~Server() {
 	}
 	finishReceive();
 	close(listensd);
+	close(connState);
 }
 
 void Server::setIpAndPort(string ip, int port){
@@ -55,7 +56,7 @@ void Server::reset(string ip, int p){
 	server_socket.sin_family=AF_INET;
 	server_socket.sin_port=htons(port);
 	server_socket.sin_addr.s_addr=inet_addr(inetAddr.c_str());
-	cout<<"INADDR: "<<INADDR_ANY<<", Sin_addr: "<<htonl(INADDR_ANY)<<endl;
+	cout<<"Image inetAddr: "<<inetAddr.c_str()<<", port: "<<port<<endl;
 	hasImage=false;
 	bConnected=false;
 }
@@ -80,6 +81,7 @@ bool Server::startAccept(){
 	connState=accept(listensd, (struct sockaddr*)(&client_socket), &length);
 	if(connState<0){
 		bConnected=false;
+		close(connState);
 		close(listensd);
 		return false;
 	}
@@ -146,6 +148,7 @@ cv::Mat Server::receiveFrame(){
 		}
 		else if(strcmp(message, "stop")==0){
 			sendMessage("stop");
+			close(connState);
 			bConnected=false;
 			return cv::Mat();
 		}

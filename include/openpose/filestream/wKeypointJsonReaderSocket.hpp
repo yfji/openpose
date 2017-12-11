@@ -40,7 +40,7 @@ namespace op
 
 		public:
 				inline void setIpAndPort(const std::string& ip, const int p){
-					serverAddr=ip;
+					inetAddr=ip;
 					port=p;
 				}
 				bool startListen();
@@ -58,7 +58,7 @@ namespace op
 						log_file<<bConnected<<" "<<std::endl;
 						#endif						
 						sendMessage("stop");
-						usleep(20);
+						close(connState);
 					  	bConnected=false;
 					  	#ifdef DEBUG
 					  	log_file<<"Socket closed successfully "<<std::endl;
@@ -68,7 +68,7 @@ namespace op
 		private:
 				int listensd;
 				int connState;
-				std::string serverAddr;
+				std::string inetAddr;
 				int port;
 				int frameIndex;
 				int numEmptyFrames;
@@ -98,7 +98,7 @@ namespace op
 		reset(ip, p);
 		server_socket.sin_family=AF_INET;
 		server_socket.sin_port=htons(port);
-		server_socket.sin_addr.s_addr=inet_addr(serverAddr.c_str());
+		server_socket.sin_addr.s_addr=inet_addr(inetAddr.c_str());
 		if(startListen()){
 			std::cout<<"Listening for reader"<<std::endl;
 		}
@@ -146,6 +146,7 @@ namespace op
     	connState=accept(listensd, (struct sockaddr*)(&client_socket), &length);
     	if(connState<0){
     		std::cout<<"Reader socket accept error"<<std::endl;
+    		close(connState);
     		return false;
 		}
 		std::cout<<"Reader socket connect successfully"<<std::endl;
@@ -160,6 +161,9 @@ namespace op
 		numConnectTimes=0;
 		bConnected=false;
 		firstFrameArrived=false;
+		listensd=-1;
+		connState=-1;
+		std::cout<<"Pose data inetAddr: "<<inetAddr.c_str()<<", port: "<<port<<std::endl;
 	}
     template<typename TDatums>
     void WKeypointJsonReaderSocket<TDatums>::workConsumer(const TDatums& tDatums)
