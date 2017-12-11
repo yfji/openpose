@@ -1,4 +1,5 @@
 build/*
+.build_release/*
 doc/*
 3rdparty/*
 examples/images/*
