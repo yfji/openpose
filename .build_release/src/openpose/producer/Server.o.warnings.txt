@@ -1,0 +1,4 @@
+src/openpose/producer/Server.cpp: In member function ‘cv::Mat Server::receiveFrame()’:
+src/openpose/producer/Server.cpp:158:6: warning: variable ‘index’ set but not used [-Wunused-but-set-variable]
+  int index=0;
+      ^

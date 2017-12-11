@@ -1,0 +1,11 @@
+In file included from src/openpose/wrapper/wrapperReader.cpp:1:0:
+./include/openpose/wrapper/wrapperReader.hpp: In constructor ‘op::WrapperReader::WrapperReader(const string&, int, bool, bool)’:
+./include/openpose/wrapper/wrapperReader.hpp:19:6: warning: ‘op::WrapperReader::port’ will be initialized after [-Wreorder]
+  int port;
+      ^
+./include/openpose/wrapper/wrapperReader.hpp:16:14: warning:   ‘bool op::WrapperReader::readKeypointJson’ [-Wreorder]
+         bool readKeypointJson;
+              ^
+src/openpose/wrapper/wrapperReader.cpp:6:5: warning:   when initialized here [-Wreorder]
+     WrapperReader::WrapperReader(const std::string& serverAddr_, const int port_, const bool readKeypointJson_, const bool readKeypointJsonSocket_):
+     ^

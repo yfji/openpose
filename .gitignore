@@ -1,0 +1,9 @@
+build/*
+doc/*
+3rdparty/*
+examples/images/*
+examples/media/*
+examples_beta/*
+*.caffemodel
+*~
+*.mp4
