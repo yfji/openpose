@@ -1,0 +1,8 @@
+build/*
+doc/*
+examples/images/*
+examples/media/*
+exxamples/*.mp4
+models/face/*.caffemodel
+models/hand/*.caffemodel
+models/pose/coco/*.caffemodel
