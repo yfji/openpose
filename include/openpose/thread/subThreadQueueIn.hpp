@@ -52,8 +52,8 @@ namespace op
                 queueIsRunning = spTQueueIn->isRunning();
             // Process TDatums
             auto workersAreRunning = true;
-            if(queueNotEmpty)
-            	workersAreRunning=this->workTWorkers(tDatums, queueIsRunning);
+            // if(queueNotEmpty)
+        	workersAreRunning=this->workTWorkers(tDatums, queueIsRunning);
             // Close queue input if all workers closed
             if (!workersAreRunning)
                 spTQueueIn->stop();

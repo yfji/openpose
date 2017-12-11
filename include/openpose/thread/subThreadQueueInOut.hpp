@@ -59,18 +59,18 @@ namespace op
                 // Pop TDatums
                 TDatums tDatums;
                 bool workersAreRunning = spTQueueIn->tryPop(tDatums);
-		bool queueNotEmpty=workersAreRunning;
+				bool queueNotEmpty=workersAreRunning;
                 // Check queue not stopped
                 if (!workersAreRunning)
                     workersAreRunning = spTQueueIn->isRunning();
                 // Process TDatums
-                if(queueNotEmpty)
-			workersAreRunning = this->workTWorkers(tDatums, workersAreRunning);
+                // if(queueNotEmpty)
+				workersAreRunning = this->workTWorkers(tDatums, workersAreRunning);
                 // Push/emplace tDatums if successfully processed
                 if (workersAreRunning)
                 {
                     //if (tDatums != nullptr)
-		    if(queueNotEmpty)
+		   			if(queueNotEmpty)
 	                    spTQueueOut->waitAndEmplace(tDatums);
                 }
                 // Close both queues otherwise

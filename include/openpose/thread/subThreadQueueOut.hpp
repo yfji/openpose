@@ -55,8 +55,8 @@ namespace op
                 // Push/emplace tDatums if successfully processed
                 if (workersAreRunning)
                 {
-                    //if (tDatums != nullptr)
-                    spTQueueOut->waitAndEmplace(tDatums);
+                    if (tDatums != nullptr)
+                   		spTQueueOut->waitAndEmplace(tDatums);
                 }
                 // Close queue otherwise
                 else

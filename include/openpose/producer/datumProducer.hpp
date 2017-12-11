@@ -120,8 +120,17 @@ namespace op
                 // checkIfTooManyConsecutiveEmptyFrames(mNumberConsecutiveEmptyFrames, datum.cvInputData.empty());
             }
             // Check producer is running
+            
+            /*
             if (!datumProducerRunning || datum.cvInputData.empty())
                 datums = nullptr;
+            */
+            
+            if(!datumProducerRunning)
+            	datums=nullptr;
+            else if(datum.cvInputData.empty()){
+            	datums=std::make_shared<TDatumsNoPtr>(0);
+        	}
             // Increase counter if successful image
             if (datums != nullptr)
                 mGlobalCounter++;

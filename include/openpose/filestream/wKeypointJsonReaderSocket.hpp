@@ -211,7 +211,7 @@ namespace op
                 // Debugging log
                 dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
             }
-		else if(tDatums==nullptr){
+		else if(tDatums!=nullptr and tDatums->size()==0){
 #ifdef DEBUG
 			log_file<<"Empty datum received from KeypointJsonReaderSocket "<<numEmptyFrames<<std::endl;
 #endif
