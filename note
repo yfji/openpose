@@ -1,0 +1,14 @@
+const int len=numGpu+1;
+cv::Mat globalFrame;
+cv::Mat frames[len];
+int frameIndex=0;
+while(1){
+  if(strcmp(message, "frame"){
+    if(not frames[frameIndex].empty()){
+        frames[frameIndex].copyTo(globalFrame);
+    }
+    cap>>image;
+    image.copyTo(frames[frameIndex]);
+    frameIndex=(frameIndex+1)%len;
+    
+    
