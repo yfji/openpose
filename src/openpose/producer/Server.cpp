@@ -15,12 +15,7 @@
 
 extern std::string poseInfo;
 
-Server::Server(string ip, int p) {
-	listensd=socket(AF_INET, SOCK_STREAM, 0);
-	if(listensd==-1){
-		cout<<"Socket error"<<endl;
-		return;
-	}
+Server::Server(const std::string& ip, int p) {
 	reset(ip, p);
 }
 
@@ -38,30 +33,36 @@ Server::~Server() {
 		delete fullImageBuff;
 	}
 	finishReceive();
-	close(listensd);
-	close(connState);
 }
 
-void Server::setIpAndPort(string ip, int port){
+void Server::setIpAndPort(const std::string& ip, int port){
 	reset(ip, port);
 }
 
-void Server::reset(string ip, int p){
+void Server::reset(const std::string& ip, int p){
 	totalSize=-1;
 	fullImageBuff=NULL;
 	port=p;
 	inetAddr=ip;
 	stop=0;
 	frameIndex=0;
+	listensd=-1;
+	connState=-1;
 	server_socket.sin_family=AF_INET;
 	server_socket.sin_port=htons(port);
 	server_socket.sin_addr.s_addr=inet_addr(inetAddr.c_str());
 	cout<<"Image inetAddr: "<<inetAddr.c_str()<<", port: "<<port<<endl;
 	hasImage=false;
 	bConnected=false;
+	bListening=false;
 }
 
 bool Server::startListen(){
+	listensd=socket(AF_INET, SOCK_STREAM, 0);
+	if(listensd==-1){
+		cout<<"Socket error"<<endl;
+		return false;
+	}
 	if(bind(listensd, (struct sockaddr*)(&server_socket), sizeof(server_socket))==-1){
 		cout<<"Bind socket error"<<endl;
 		close(listensd);
@@ -73,6 +74,7 @@ bool Server::startListen(){
 		return false;
 	}
 	cout<<"bind successfully"<<endl;
+	bListening=true;
 	return true;
 }
 
@@ -83,6 +85,7 @@ bool Server::startAccept(){
 		bConnected=false;
 		close(connState);
 		close(listensd);
+		bListening=false;
 		return false;
 	}
 	bConnected=true;
@@ -180,7 +183,6 @@ cv::Mat Server::receiveFrame(){
 				}
 				*/
 				total+=rn;
-				//cout<<total<<endl;
 				if(total==totalSize){
 					frameReceived=true;
 					break;
@@ -188,13 +190,11 @@ cv::Mat Server::receiveFrame(){
 				++cnt;
 			}
 #ifdef COMPRESS
-			//cout<<"recover image"<<endl;
 			dataToRecover=vector<uchar>(fullImageBuff, fullImageBuff+totalSize);
 			dataFrame=cv::imdecode(dataToRecover, 1);
 #else
 			dataFrame=cv::Mat(height,width,CV_8UC3,fullImageBuff);
 #endif
-			//cout<<dataFrame.cols<<","<<dataFrame.rows<<","<<dataFrame.channels()<<endl;
 			++frameIndex;
 #ifndef SIMPLE
 		}
@@ -216,12 +216,12 @@ string Server::receiveMessage(){
 }
 
 void Server::finishReceive(){
-	if(not bConnected){
-		//cout<<"no connection, exit"<<endl;
-		/***already send message stop***/
-		return;
+	if(bConnected){
+		sendMessage("stop");
 	}
-	sendMessage("stop");
 	bConnected=false;
+	bListening=false;
+	close(connState);
+	close(listensd);
 }
 

@@ -54,15 +54,15 @@ namespace op
 				void reset(const std::string& ip, const int p);
 				inline void finishSend(){
 					if(bConnected){
-						#ifdef DEBUG
+#ifdef DEBUG
 						log_file<<bConnected<<" "<<std::endl;
-						#endif						
+#endif						
 						sendMessage("stop");
 						close(connState);
 					  	bConnected=false;
-					  	#ifdef DEBUG
+#ifdef DEBUG
 					  	log_file<<"Socket closed successfully "<<std::endl;
-					  	#endif
+#endif
 					}
 				}
 		private:
@@ -77,10 +77,11 @@ namespace op
 				struct sockaddr_in server_socket;
 				struct sockaddr_in client_socket;
 				bool bConnected;
+				bool bListening;
 				bool firstFrameArrived;
-				#ifdef DEBUG
+#ifdef DEBUG
 				std::ofstream log_file;
-				#endif
+#endif
 				
 				std::shared_ptr<std::atomic<bool>> spIsBlocking;
     };
@@ -106,7 +107,7 @@ namespace op
 			std::cout<<"Listening for reader error"<<std::endl;
 		}
 #ifdef DEBUG
-		log_file.open("/home/yfji/GitProjects/openpose-master_nogui/log/run.log", std::ios::out);
+		log_file.open("/home/yfji/GitProjects/openpose-master_blockable/log/run.log", std::ios::out);
 #endif
     }
 	template<typename TDatums>
@@ -137,6 +138,7 @@ namespace op
 			std::cout<<"Listen error"<<std::endl;
 			close(listensd);
 		}
+		bListening=true;
 		return true;
 	}
 
@@ -145,11 +147,9 @@ namespace op
     	socklen_t length=sizeof(struct sockaddr_in);
     	connState=accept(listensd, (struct sockaddr*)(&client_socket), &length);
     	if(connState<0){
-    		std::cout<<"Reader socket accept error"<<std::endl;
     		close(connState);
     		return false;
 		}
-		std::cout<<"Reader socket connect successfully"<<std::endl;
 		bConnected=true;
 		return true;
     }
@@ -160,72 +160,80 @@ namespace op
 		numEmptyFrames=0;
 		numConnectTimes=0;
 		bConnected=false;
+		bListening=false;
 		firstFrameArrived=false;
 		listensd=-1;
 		connState=-1;
 		std::cout<<"Pose data inetAddr: "<<inetAddr.c_str()<<", port: "<<port<<std::endl;
 	}
-    template<typename TDatums>
-    void WKeypointJsonReaderSocket<TDatums>::workConsumer(const TDatums& tDatums)
-    {
-        try
-        {
-        	// std::cout<<"Socket running"<<std::endl;
-		   	if(not bConnected){
-				std::cout<<"Reader accepting for another connection..."<<std::endl;
-				if(startAccept()){
-					bConnected=true;
-				}
-				else{
-					return;
-				}
-			}
-            if (checkNoNullNorEmpty(tDatums))
-            {
-                dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
-                const auto profilerKey = Profiler::timerInit(__LINE__, __FUNCTION__, __FILE__);
-                const bool humanReadable = true;
-                for (auto i = 0u ; i < tDatums->size() ; i++)
-                {
-                    const auto& tDatum = (*tDatums)[i];
-  
-
-                    const std::vector<std::pair<Array<float>, std::string>> keypointVector{
-                        std::make_pair(tDatum.poseKeypoints, "pose_keypoints"),
-                        std::make_pair(tDatum.faceKeypoints, "face_keypoints"),
-                        std::make_pair(tDatum.handKeypoints[0], "hand_left_keypoints"),
-                        std::make_pair(tDatum.handKeypoints[1], "hand_right_keypoints")
-                    };
-					if(keypointVector[0].first.getSize(0)>0){
-						firstFrameArrived=true;
-  // Read and send keypoints
-      std::string poseInfo=spKeypointJsonReader->read(keypointVector, humanReadable);
-						if(bConnected){ //frameIndex>2 and and frameIndex%5==0 
-							sendMessage(poseInfo.c_str());
-							//usleep(1);
-							//sendMessage("99.9");
+  template<typename TDatums>
+  void WKeypointJsonReaderSocket<TDatums>::workConsumer(const TDatums& tDatums)
+  {
+      try
+      {
+      	// std::cout<<"Socket running"<<std::endl;
+			 	if(not bConnected){
+			 		if(not bListening){
+			 			std::cout<<"Listening for another connection..."<<std::endl;
+						if(not startListen()){
+							std::cout<<"Listening error"<<std::endl;
+							return;
 						}
 					}
+					std::cout<<"Reader accepting for another connection..."<<std::endl;
+					if(startAccept()){
+						bConnected=true;
+						std::cout<<"Reader socket connect successfully"<<std::endl;
+					}
 					else{
-						sendMessage("nop");
+						std::cout<<"Reader socket accept error"<<std::endl;
+						close(listensd);
+						bListening=false;
+						return;
 					}
-					while(1){
-						int rn=recv(connState, message, sizeof(message),0);
-						message[rn]='\0';
-						if(strcmp(message, "data")==0)	break;
-						usleep(5);
-					}
-                }	
-				++frameIndex;
-                Profiler::timerEnd(profilerKey);
-                Profiler::printAveragedTimeMsOnIterationX(profilerKey, __LINE__, __FUNCTION__, __FILE__);
-                // Debugging log
-                dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
-            }
+				}
+		    if (checkNoNullNorEmpty(tDatums))
+		    {
+		        dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
+		        const auto profilerKey = Profiler::timerInit(__LINE__, __FUNCTION__, __FILE__);
+		        const bool humanReadable = true;
+		        for (auto i = 0u ; i < tDatums->size() ; i++)
+		        {
+		          const auto& tDatum = (*tDatums)[i];
+
+		          const std::vector<std::pair<Array<float>, std::string>> keypointVector{
+		              std::make_pair(tDatum.poseKeypoints, "pose_keypoints"),
+		              std::make_pair(tDatum.faceKeypoints, "face_keypoints"),
+		              std::make_pair(tDatum.handKeypoints[0], "hand_left_keypoints"),
+		              std::make_pair(tDatum.handKeypoints[1], "hand_right_keypoints")
+		        };
+						if(keypointVector[0].first.getSize(0)>0){
+							firstFrameArrived=true;
+		    			std::string poseInfo=spKeypointJsonReader->read(keypointVector, humanReadable);
+							if(bConnected){ //frameIndex>2 and and frameIndex%5==0 
+								sendMessage(poseInfo.c_str());
+							}
+						}
+						else{
+							sendMessage("nop");
+						}
+						while(1){
+							int rn=recv(connState, message, sizeof(message),0);
+							message[rn]='\0';
+							if(strcmp(message, "data")==0)	break;
+							usleep(5);
+						}
+		      }	
+					++frameIndex;
+		      Profiler::timerEnd(profilerKey);
+		      Profiler::printAveragedTimeMsOnIterationX(profilerKey, __LINE__, __FUNCTION__, __FILE__);
+		      // Debugging log
+		      dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
+		  }
 			else if(tDatums!=nullptr and tDatums->size()==0){
-#ifdef DEBUG
+	#ifdef DEBUG
 				log_file<<"Empty datum received from KeypointJsonReaderSocket "<<numEmptyFrames<<std::endl;
-#endif
+	#endif
 				++numEmptyFrames;
 			}
 			if(numEmptyFrames==10){
@@ -234,15 +242,15 @@ namespace op
 				*spIsBlocking= true;
 				usleep(20);
 			}
-        }
-        catch (const std::exception& e)
-        {
-            this->stop();
-            error(e.what(), __LINE__, __FUNCTION__, __FILE__);
-        }
-    }
+		}
+		catch (const std::exception& e)
+		{
+	    this->stop();
+	    error(e.what(), __LINE__, __FUNCTION__, __FILE__);
+		}
+	}
 
-    COMPILE_TEMPLATE_DATUM(WKeypointJsonReaderSocket);
+  COMPILE_TEMPLATE_DATUM(WKeypointJsonReaderSocket);
 }
 
 //#endif // OPENPOSE_FILESTREAM_W_KEYPOINT_JSON_READER_SOCKET_HPP

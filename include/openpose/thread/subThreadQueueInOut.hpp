@@ -57,6 +57,7 @@ namespace op
             else
             {
                 // Pop TDatums
+                /*** Initialized with nullptr ***/
                 TDatums tDatums;
                 bool workersAreRunning = spTQueueIn->tryPop(tDatums);
                 bool queueNotEmpty=workersAreRunning;
@@ -64,12 +65,15 @@ namespace op
                 if (!workersAreRunning)
                     workersAreRunning = spTQueueIn->isRunning();
                 // Process TDatums
+                
                 //if(queueNotEmpty)
+                /*** Do not care if queue is empty, always workTWorkers ***/
             	workersAreRunning = this->workTWorkers(tDatums, workersAreRunning);
+            	
                 // Push/emplace tDatums if successfully processed
                 if (workersAreRunning)
                 {
-                    /***tDatums==nullptr <==> not queueEmpty***/
+                    /*** tDatums==nullptr <==> queueEmpty ***/
                     //if (tDatums != nullptr){
 					if(queueNotEmpty){
                     	spTQueueOut->waitAndEmplace(tDatums);

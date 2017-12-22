@@ -26,7 +26,7 @@ using namespace std;
 
 class Server {
 public:
-	Server(string ip, int p);
+	Server(const std::string& ip, int p);
 	Server();
 	virtual ~Server();
 	
@@ -50,18 +50,22 @@ private:
 	vector<uchar> dataToRecover;
 	bool hasImage;
   bool bConnected;
+  bool bListening;
 	char stop;
 
 public:
-	void setIpAndPort(string ip, int port);
+	void setIpAndPort(const std::string& ip, int port);
 	bool startListen();
 	bool startAccept();
   inline int getFrameIndex(){
     return frameIndex;
   }
-  inline int isConnected(){
+  inline bool isConnected(){
     return bConnected;
   }
+  inline bool isListening(){
+  	return bListening;
+	}
 	inline void setConnected(bool c){
 		bConnected=c;
 	}
@@ -69,7 +73,7 @@ public:
 	cv::Mat receiveFrame();
 	string receiveMessage();
   void finishReceive();
-  void reset(string ip, int p);
+  void reset(const std::string& ip, int p);
 };
 
 //static void* onImageProcess(void* args);
