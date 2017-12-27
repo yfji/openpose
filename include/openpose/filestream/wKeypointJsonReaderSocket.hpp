@@ -258,7 +258,11 @@ namespace op
 							sendMessage("nop");
 						}
 						while(1){
-							int rn=recv(connState, message, sizeof(message),0);
+							int rn=recv(connState, message, sizeof(message),MSG_WAITALL);
+							if(rn<=0 or errno==11){
+								std::cout<<"Wait response timeout or network error"<<std::endl;
+								break;
+							}
 							message[rn]='\0';
 							if(strcmp(message, "data")==0)	break;
 							usleep(5);

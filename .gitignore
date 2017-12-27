@@ -1,7 +1,7 @@
 *.o
 *.d
-doc/*
 .build_release/*
+doc/*
 .git/objects/pack/*
 examples/images/*
 examples/media/*
