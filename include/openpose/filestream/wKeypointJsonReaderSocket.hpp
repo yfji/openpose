@@ -81,8 +81,10 @@ namespace op
 				int numConnectTimes;
 				char message[100];
 				char handcheckBuff[5];
+				char responseBuff[5];
 				const int cmd_len=4;
 				const char* handcheckMessage="yuge";
+				const char* responseMessage="data";
 				struct sockaddr_in server_socket;
 				struct sockaddr_in client_socket;
 				bool bConnected;
@@ -258,13 +260,13 @@ namespace op
 							sendMessage("nop");
 						}
 						while(1){
-							int rn=recv(connState, message, sizeof(message),MSG_WAITALL);
+							int rn=recv(connState, responseBuff, cmd_len,MSG_WAITALL);
 							if(rn<=0 or errno==11){
 								std::cout<<"Wait response timeout or network error"<<std::endl;
 								break;
 							}
-							message[rn]='\0';
-							if(strcmp(message, "data")==0)	break;
+							responseBuff[rn]='\0';
+							if(strcmp(responseBuff, responseMessage)==0)	break;
 							usleep(5);
 						}
 		      }	
@@ -278,7 +280,7 @@ namespace op
 	#ifdef DEBUG
 				log_file<<"Empty datum received from KeypointJsonReaderSocket "<<numEmptyFrames<<std::endl;
 	#endif
-				std::cout<<"Empty datum"<<std::endl;
+				// std::cout<<"Empty datum"<<std::endl;
 				++numEmptyFrames;
 			}
 			if(numEmptyFrames==10){
