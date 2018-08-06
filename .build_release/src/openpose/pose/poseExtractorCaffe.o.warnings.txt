@@ -1,0 +1,4 @@
+src/openpose/pose/poseExtractorCaffe.cpp: In member function ‘virtual void op::PoseExtractorCaffe::forwardPass(const op::Array<float>&, const op::Point<int>&, const std::vector<double>&)’:
+src/openpose/pose/poseExtractorCaffe.cpp:156:21: warning: unused variable ‘h_offset’ [-Wunused-variable]
+                 int h_offset=h*w;
+                     ^

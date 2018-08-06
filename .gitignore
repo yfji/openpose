@@ -1,0 +1,11 @@
+*.o
+*.d
+*.bin
+*.a*
+*.so*
+*.jpg
+*.png
+*.mp4
+*.avi
+*.caffemodel
+*~

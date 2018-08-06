@@ -1,0 +1,15 @@
+In file included from src/openpose/pose/bodyPartConnectorCaffe.cpp:2:0:
+3rdparty/caffe/distribute/include/caffe/blob.hpp: In instantiation of ‘std::__cxx11::string caffe::Blob<Dtype>::shape_string() const [with Dtype = float; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+3rdparty/caffe/distribute/include/caffe/blob.hpp:121:49:   required from ‘int caffe::Blob<Dtype>::CanonicalAxisIndex(int) const [with Dtype = float]’
+3rdparty/caffe/distribute/include/caffe/blob.hpp:72:37:   required from ‘int caffe::Blob<Dtype>::shape(int) const [with Dtype = float]’
+src/openpose/pose/bodyPartConnectorCaffe.cpp:59:59:   required from ‘void op::BodyPartConnectorCaffe<T>::Reshape(const std::vector<caffe::Blob<T>*>&, const std::vector<caffe::Blob<T>*>&) [with T = float]’
+src/openpose/pose/bodyPartConnectorCaffe.cpp:253:5:   required from here
+3rdparty/caffe/distribute/include/caffe/blob.hpp:56:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for (int i = 0; i < shape_.size(); ++i) {
+                       ^
+3rdparty/caffe/distribute/include/caffe/blob.hpp: In instantiation of ‘std::__cxx11::string caffe::Blob<Dtype>::shape_string() const [with Dtype = double; std::__cxx11::string = std::__cxx11::basic_string<char>]’:
+3rdparty/caffe/distribute/include/caffe/blob.hpp:121:49:   required from ‘int caffe::Blob<Dtype>::CanonicalAxisIndex(int) const [with Dtype = double]’
+3rdparty/caffe/distribute/include/caffe/blob.hpp:72:37:   required from ‘int caffe::Blob<Dtype>::shape(int) const [with Dtype = double]’
+src/openpose/pose/bodyPartConnectorCaffe.cpp:59:59:   required from ‘void op::BodyPartConnectorCaffe<T>::Reshape(const std::vector<caffe::Blob<T>*>&, const std::vector<caffe::Blob<T>*>&) [with T = double]’
+src/openpose/pose/bodyPartConnectorCaffe.cpp:253:5:   required from here
+3rdparty/caffe/distribute/include/caffe/blob.hpp:56:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
